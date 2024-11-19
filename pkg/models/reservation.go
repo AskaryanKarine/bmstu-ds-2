@@ -10,9 +10,9 @@ type ReservationResponse struct {
 }
 
 type CreateReservationRequest struct {
-	HotelUid  string `json:"hotelUid"`
-	StartDate string `json:"startDate"`
-	EndDate   string `json:"endDate"`
+	HotelUid  string `json:"hotelUid" validate:"required,uuid"`
+	StartDate string `json:"startDate" validate:"required,IsISO8601"`
+	EndDate   string `json:"endDate" validate:"required,IsISO8601"`
 }
 
 type CreateReservationResponse struct {
@@ -21,4 +21,9 @@ type CreateReservationResponse struct {
 	Status         PaymentStatusType `json:"status"`
 	Payment        PaymentInfo       `json:"payment"`
 	CreateReservationRequest
+}
+
+type ExtendedReservationResponse struct {
+	ReservationResponse
+	PaymentUID string `json:"paymentUid"`
 }

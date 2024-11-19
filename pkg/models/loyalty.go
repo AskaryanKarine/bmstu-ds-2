@@ -14,5 +14,5 @@ type LoyaltyInfoResponse struct {
 	// Discount - скидка по программе лояльности
 	Discount int `json:"discount"`
 	// ReservationCount - количество бронирований
-	ReservationCount int `json:"reservationCount"`
+	ReservationCount *int `json:"reservationCount,omitempty"`
 }

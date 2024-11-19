@@ -4,7 +4,6 @@ type PaymentStatusType string
 
 const (
 	PAID     PaymentStatusType = "PAID"
-	REVERSED PaymentStatusType = "REVERSED"
 	CANCELED PaymentStatusType = "CANCELED"
 )
 
