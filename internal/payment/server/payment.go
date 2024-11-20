@@ -75,11 +75,11 @@ func (s *Server) CreatePayment(c echo.Context) error {
 		Status: models.PAID,
 		Price:  int(costWithDiscount),
 	}
-	err = s.ps.Create(c.Request().Context(), payment)
+	payment.PaymentUid, err = s.ps.Create(c.Request().Context(), payment)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.ErrorResponse{Message: err.Error()})
 	}
 	return c.JSON(http.StatusCreated, echo.Map{
-		"payment_uid": payment.PaymentUid,
+		"paymentUid": payment.PaymentUid,
 	})
 }

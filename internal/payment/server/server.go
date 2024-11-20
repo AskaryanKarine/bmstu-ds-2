@@ -16,7 +16,7 @@ type Server struct {
 type paymentStorage interface {
 	GetPaymentInfoByUUID(ctx context.Context, uuid string) (models.PaymentInfo, error)
 	Delete(ctx context.Context, uuid string) error
-	Create(ctx context.Context, payment inner_models.Payment) error
+	Create(ctx context.Context, payment inner_models.Payment) (string, error)
 }
 
 func NewServer(ps paymentStorage) *Server {

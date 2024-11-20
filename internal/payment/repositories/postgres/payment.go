@@ -20,13 +20,13 @@ func NewPaymentStorage(db *gorm.DB) *paymentStorage {
 }
 
 const (
-	paymentTable = "payment p"
+	paymentTable = "payment"
 )
 
 func (p *paymentStorage) GetPaymentInfoByUUID(ctx context.Context, uuid string) (models.PaymentInfo, error) {
 	var paymentInfo models.PaymentInfo
 
-	err := p.db.WithContext(ctx).Table(paymentTable).Where("p.payment_uid = ?", uuid).Take(&paymentInfo).Error
+	err := p.db.WithContext(ctx).Table(paymentTable).Where("payment_uid = ?", uuid).Take(&paymentInfo).Error
 	if err != nil {
 		return models.PaymentInfo{}, fmt.Errorf("failed to get reservation by uuid %s: %w", uuid, err)
 	}
@@ -35,18 +35,18 @@ func (p *paymentStorage) GetPaymentInfoByUUID(ctx context.Context, uuid string) 
 }
 
 func (p *paymentStorage) Delete(ctx context.Context, uuid string) error {
-	err := p.db.WithContext(ctx).Table(paymentTable).Where("p.payment_uid = ?", uuid).Update("status", models.CANCELED).Error
+	err := p.db.WithContext(ctx).Table(paymentTable).Where("payment_uid = ?", uuid).Update("status", models.CANCELED).Error
 	if err != nil {
 		return fmt.Errorf("failed deleting payment %s: %w", uuid, err)
 	}
 	return nil
 }
 
-func (p *paymentStorage) Create(ctx context.Context, payment inner_models.Payment) error {
+func (p *paymentStorage) Create(ctx context.Context, payment inner_models.Payment) (string, error) {
 	payment.PaymentUid = uuid.New().String()
 	err := p.db.WithContext(ctx).Table(paymentTable).Create(&payment).Error
 	if err != nil {
-		return fmt.Errorf("failed creating payment %s: %w", payment.PaymentUid, err)
+		return "", fmt.Errorf("failed creating payment %s: %w", payment.PaymentUid, err)
 	}
-	return nil
+	return payment.PaymentUid, nil
 }
