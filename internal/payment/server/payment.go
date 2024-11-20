@@ -3,7 +3,6 @@ package server
 import (
 	"errors"
 	"fmt"
-	inner_models "github.com/AskaryanKarine/bmstu-ds-2/internal/payment/models"
 	"github.com/AskaryanKarine/bmstu-ds-2/pkg/models"
 	"github.com/AskaryanKarine/bmstu-ds-2/pkg/validation"
 	"github.com/labstack/echo/v4"
@@ -71,15 +70,13 @@ func (s *Server) CreatePayment(c echo.Context) error {
 	cost := float64(body.Price) * days
 	costWithDiscount := cost - (cost * (float64(body.Discount) * 0.01))
 
-	payment := inner_models.Payment{
+	payment := models.PaymentInfo{
 		Status: models.PAID,
 		Price:  int(costWithDiscount),
 	}
-	payment.PaymentUid, err = s.ps.Create(c.Request().Context(), payment)
+	paymentUid, err := s.ps.Create(c.Request().Context(), payment)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.ErrorResponse{Message: err.Error()})
 	}
-	return c.JSON(http.StatusCreated, echo.Map{
-		"paymentUid": payment.PaymentUid,
-	})
+	return c.JSON(http.StatusCreated, models.ExtendedPaymentInfo{PaymentUid: paymentUid, PaymentInfo: payment})
 }

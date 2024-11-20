@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"fmt"
-	inner_models "github.com/AskaryanKarine/bmstu-ds-2/internal/payment/models"
 	"github.com/AskaryanKarine/bmstu-ds-2/pkg/models"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -42,11 +41,16 @@ func (p *paymentStorage) Delete(ctx context.Context, uuid string) error {
 	return nil
 }
 
-func (p *paymentStorage) Create(ctx context.Context, payment inner_models.Payment) (string, error) {
-	payment.PaymentUid = uuid.New().String()
-	err := p.db.WithContext(ctx).Table(paymentTable).Create(&payment).Error
+func (p *paymentStorage) Create(ctx context.Context, payment models.PaymentInfo) (string, error) {
+	newPayment := struct {
+		PaymentUid string
+		models.PaymentInfo
+	}{}
+	newPayment.PaymentUid = uuid.New().String()
+	newPayment.PaymentInfo = payment
+	err := p.db.WithContext(ctx).Table(paymentTable).Create(&newPayment).Error
 	if err != nil {
-		return "", fmt.Errorf("failed creating payment %s: %w", payment.PaymentUid, err)
+		return "", fmt.Errorf("failed creating payment: %w", err)
 	}
-	return payment.PaymentUid, nil
+	return newPayment.PaymentUid, nil
 }

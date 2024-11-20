@@ -102,48 +102,46 @@ func (p *PaymentClient) Cancel(uuid string) error {
 
 }
 
-func (p *PaymentClient) CreatePayment(payment models.PaymentCreateRequest) (string, error) {
+func (p *PaymentClient) CreatePayment(payment models.PaymentCreateRequest) (models.ExtendedPaymentInfo, error) {
 	urlReq := fmt.Sprintf("%s/%s", p.baseUrl, "payments")
 	reqBody, err := json.Marshal(payment)
 	if err != nil {
-		return "", fmt.Errorf("failed to build request body: %w", err)
+		return models.ExtendedPaymentInfo{}, fmt.Errorf("failed to build request body: %w", err)
 	}
 	req, err := http.NewRequest(http.MethodPost, urlReq, bytes.NewBuffer(reqBody))
 	if err != nil {
-		return "", fmt.Errorf("failed to build request: %w", err)
+		return models.ExtendedPaymentInfo{}, fmt.Errorf("failed to build request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := p.client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("failed to make request: %w", err)
+		return models.ExtendedPaymentInfo{}, fmt.Errorf("failed to make request: %w", err)
 	}
 	if resp == nil {
-		return "", models.EmptyResponseError
+		return models.ExtendedPaymentInfo{}, models.EmptyResponseError
 	}
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("failed to read response body: %w", err)
+		return models.ExtendedPaymentInfo{}, fmt.Errorf("failed to read response body: %w", err)
 	}
 	defer resp.Body.Close()
 	switch resp.StatusCode {
 	case http.StatusCreated:
-		var respModel struct {
-			PaymentUID string `json:"paymentUid"`
-		}
+		var respModel models.ExtendedPaymentInfo
 		if err := json.Unmarshal(body, &respModel); err != nil {
-			return "", fmt.Errorf("failed to unmarshal response body: %w", err)
+			return models.ExtendedPaymentInfo{}, fmt.Errorf("failed to unmarshal response body: %w", err)
 		}
-		return respModel.PaymentUID, nil
+		return respModel, nil
 	case http.StatusBadRequest, http.StatusInternalServerError:
 		var respErr models.ErrorResponse
 		if err := json.Unmarshal(body, &respErr); err != nil {
-			return "", fmt.Errorf("failed to unmarshal response body: %w", err)
+			return models.ExtendedPaymentInfo{}, fmt.Errorf("failed to unmarshal response body: %w", err)
 		}
 		respErr.StatusCode = resp.StatusCode
-		return "", respErr
+		return models.ExtendedPaymentInfo{}, respErr
 	default:
-		return "", models.ErrorResponse{
+		return models.ExtendedPaymentInfo{}, models.ErrorResponse{
 			StatusCode: resp.StatusCode,
 			Message:    models.UndefinedResponseCodeError.Error(),
 		}

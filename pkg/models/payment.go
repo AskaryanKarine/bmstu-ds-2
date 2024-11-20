@@ -20,3 +20,8 @@ type PaymentCreateRequest struct {
 	StartDate string `json:"startDate" validate:"required,IsISO8601"`
 	EndDate   string `json:"endDate" validate:"required,IsISO8601"`
 }
+
+type ExtendedPaymentInfo struct {
+	PaymentUid string `json:"paymentUid"`
+	PaymentInfo
+}
