@@ -167,6 +167,12 @@ func (s *Server) createReservation(c echo.Context) error {
 		return processError(c, err)
 	}
 	reservation.Payment = extendedPaymentInfo.PaymentInfo
-
-	return c.JSON(http.StatusCreated, reservation)
+	response := models.CreateReservationResponse{
+		ReservationUid:           reservationUid,
+		Discount:                 loyalty.Discount,
+		Status:                   reservation.Status,
+		Payment:                  extendedPaymentInfo.PaymentInfo,
+		CreateReservationRequest: body,
+	}
+	return c.JSON(http.StatusOK, response)
 }

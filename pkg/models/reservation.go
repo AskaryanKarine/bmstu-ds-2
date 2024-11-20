@@ -17,7 +17,7 @@ type CreateReservationRequest struct {
 
 type CreateReservationResponse struct {
 	ReservationUid string            `json:"reservationUid"`
-	Discount       string            `json:"discount"`
+	Discount       int               `json:"discount"`
 	Status         PaymentStatusType `json:"status"`
 	Payment        PaymentInfo       `json:"payment"`
 	CreateReservationRequest
