@@ -108,3 +108,43 @@ func (l *LoyaltyClient) DecreaseLoyalty(username string) error {
 		}
 	}
 }
+
+func (l *LoyaltyClient) IncreaseLoyalty(username string) error {
+	urlReq := fmt.Sprintf("%s/%s", l.baseUrl, "reservations/increase")
+	req, err := http.NewRequest(http.MethodPost, urlReq, nil)
+	if err != nil {
+		return fmt.Errorf("failed to build request: %w", err)
+	}
+
+	req.Header.Set("X-User-Name", username)
+	resp, err := l.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to make request: %w", err)
+	}
+
+	if resp == nil {
+		return models.EmptyResponseError
+	}
+
+	switch resp.StatusCode {
+	case http.StatusNoContent:
+		return nil
+	case http.StatusBadRequest, http.StatusNotFound, http.StatusInternalServerError:
+		var respErr models.ErrorResponse
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to read response body: %w", err)
+		}
+		if err := json.Unmarshal(body, &respErr); err != nil {
+			return fmt.Errorf("failed to unmarshal response body: %w", err)
+		}
+		resp.Body.Close()
+		respErr.StatusCode = resp.StatusCode
+		return respErr
+	default:
+		return models.ErrorResponse{
+			StatusCode: resp.StatusCode,
+			Message:    models.UndefinedResponseCodeError.Error(),
+		}
+	}
+}
