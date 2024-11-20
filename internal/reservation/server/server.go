@@ -16,12 +16,14 @@ type Server struct {
 
 type hotelStorage interface {
 	GetAllHotels(ctx context.Context, pagination innermodels.PaginationParams) ([]models.HotelResponse, int, error)
+	GetHotelInfoByUUID(ctx context.Context, uuid string) (models.HotelResponse, error)
 }
 
 type reservationStorage interface {
 	GetReservationByUUID(ctx context.Context, uuid, username string) (models.ExtendedReservationResponse, error)
 	GetAllReservationByUsername(ctx context.Context, username string) ([]models.ExtendedReservationResponse, error)
 	Delete(ctx context.Context, uuid string) error
+	Create(ctx context.Context, reservation models.ExtendedCreateReservationResponse, username string) (string, error)
 }
 
 func New(hs hotelStorage, rs reservationStorage) *Server {
@@ -38,6 +40,7 @@ func New(hs hotelStorage, rs reservationStorage) *Server {
 	api := s.echo.Group("/api/v1")
 
 	api.GET("/hotels", s.getAllHotels)
+	api.GET("/hotels/:uid", s.getHotelByUID)
 
 	reservations := api.Group("/reservations")
 	reservations.GET("", s.getAllReservationsByUser, app.GetUsernameMW())

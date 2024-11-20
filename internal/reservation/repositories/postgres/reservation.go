@@ -5,6 +5,7 @@ import (
 	"fmt"
 	inner_models "github.com/AskaryanKarine/bmstu-ds-2/internal/reservation/models"
 	"github.com/AskaryanKarine/bmstu-ds-2/pkg/models"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -93,4 +94,24 @@ func (r *reservationStorage) Delete(ctx context.Context, uuid string) error {
 		return fmt.Errorf("failed deleting reservation %s: %w", uuid, err)
 	}
 	return nil
+}
+
+func (r *reservationStorage) Create(ctx context.Context, reservation models.ExtendedCreateReservationResponse, username string) (string, error) {
+	reservationDB := inner_models.ToReservationTable(reservation)
+
+	err := r.db.WithContext(ctx).Table(hotelTable).Where("h.hotel_uid = ?", reservation.HotelUid).
+		Select("id").Take(&reservationDB.HotelID).Error
+	if err != nil {
+		return "", fmt.Errorf("failed creating reservation: %w", err)
+	}
+
+	reservationDB.ReservationUid = uuid.New().String()
+	reservationDB.Status = models.PAID
+	reservationDB.Username = username
+
+	err = r.db.WithContext(ctx).Table("reservation").Create(&reservationDB).Error
+	if err != nil {
+		return "", fmt.Errorf("failed creating reservation: %w", err)
+	}
+	return reservationDB.ReservationUid, nil
 }

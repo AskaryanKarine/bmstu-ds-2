@@ -22,3 +22,21 @@ func (r *ReservationResponse) ToResponse(info models.HotelInfo) models.ExtendedR
 		PaymentUID: r.PaymentUID,
 	}
 }
+
+type ReservationTable struct {
+	ReservationUid string
+	Username       string
+	PaymentUid     string
+	HotelID        int
+	Status         models.PaymentStatusType
+	StartDate      string
+	EndDate        string
+}
+
+func ToReservationTable(model models.ExtendedCreateReservationResponse) ReservationTable {
+	return ReservationTable{
+		PaymentUid: model.PaymentUid,
+		StartDate:  model.StartDate,
+		EndDate:    model.EndDate,
+	}
+}

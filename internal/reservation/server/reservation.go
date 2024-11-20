@@ -10,17 +10,30 @@ import (
 )
 
 func (s *Server) createReservation(c echo.Context) error {
-	var body models.CreateReservationRequest
+	username, ok := c.Get("username").(string)
+	if !ok {
+		return c.JSON(http.StatusBadRequest, models.ErrorResponse{Message: "failed to get username"})
+	}
+
+	var body models.ExtendedCreateReservationResponse
 
 	if err := c.Bind(&body); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, models.ErrorResponse{Message: err.Error()})
+		return c.JSON(http.StatusBadRequest, models.ErrorResponse{Message: err.Error()})
 	}
 
 	if err := c.Validate(body); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, models.ErrorResponse{Message: err.Error()})
+		return c.JSON(http.StatusBadRequest, models.ErrorResponse{Message: err.Error()})
 	}
 
-	return nil
+	reservationUid, err := s.rs.Create(c.Request().Context(), body, username)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return c.JSON(http.StatusNotFound, models.ErrorResponse{Message: "hotel uid not found"})
+		}
+		return c.JSON(http.StatusInternalServerError, models.ErrorResponse{Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, models.ReservationResponse{ReservationUid: reservationUid})
 }
 
 func (s *Server) getReservationByUid(c echo.Context) error {

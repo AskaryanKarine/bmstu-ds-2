@@ -54,3 +54,13 @@ func (h *hotelStorage) GetHotelsInfoByUser(ctx context.Context, username string)
 	}
 	return results, nil
 }
+
+func (h *hotelStorage) GetHotelInfoByUUID(ctx context.Context, uuid string) (models.HotelResponse, error) {
+	var result models.HotelResponse
+	err := h.db.WithContext(ctx).Table(hotelTable).
+		Where("hotel_uid = ?", uuid).Take(&result).Error
+	if err != nil {
+		return models.HotelResponse{}, fmt.Errorf("failed to get hotel by uuid %s: %w", uuid, err)
+	}
+	return result, nil
+}

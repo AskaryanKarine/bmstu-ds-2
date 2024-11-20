@@ -27,3 +27,8 @@ type ExtendedReservationResponse struct {
 	ReservationResponse
 	PaymentUID string `json:"paymentUid"`
 }
+
+type ExtendedCreateReservationResponse struct {
+	CreateReservationRequest
+	PaymentUid string `json:"paymentUid" validate:"required,uuid"`
+}
