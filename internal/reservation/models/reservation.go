@@ -1,6 +1,9 @@
 package models
 
-import "github.com/AskaryanKarine/bmstu-ds-2/pkg/models"
+import (
+	"github.com/AskaryanKarine/bmstu-ds-2/pkg/models"
+	"time"
+)
 
 type ReservationResponse struct {
 	ReservationUid string
@@ -10,17 +13,26 @@ type ReservationResponse struct {
 	PaymentUID     string
 }
 
-func (r *ReservationResponse) ToResponse(info models.HotelInfo) models.ExtendedReservationResponse {
+func (r *ReservationResponse) ToResponse(info models.HotelInfo) (models.ExtendedReservationResponse, error) {
+	layout := "2006-01-02T15:04:05.999999999-07:00"
+	tStart, err := time.Parse(layout, r.StartDate)
+	if err != nil {
+		return models.ExtendedReservationResponse{}, err
+	}
+	tEnd, err := time.Parse(layout, r.EndDate)
+	if err != nil {
+		return models.ExtendedReservationResponse{}, err
+	}
 	return models.ExtendedReservationResponse{
 		ReservationResponse: models.ReservationResponse{
 			ReservationUid: r.ReservationUid,
-			StartDate:      r.StartDate,
-			EndDate:        r.EndDate,
+			StartDate:      tStart.Format("2006-01-02"),
+			EndDate:        tEnd.Format("2006-01-02"),
 			Status:         r.Status,
 			Hotel:          info,
 		},
 		PaymentUID: r.PaymentUID,
-	}
+	}, nil
 }
 
 type ReservationTable struct {

@@ -49,8 +49,10 @@ func (r *reservationStorage) GetReservationByUUID(ctx context.Context, uuid, use
 	if err != nil {
 		return models.ExtendedReservationResponse{}, fmt.Errorf("failed to get reservation by uuid %s: %w", uuid, err)
 	}
-	reservationResp = reservationDB.ToResponse(hotelInfo)
-
+	reservationResp, err = reservationDB.ToResponse(hotelInfo)
+	if err != nil {
+		return models.ExtendedReservationResponse{}, fmt.Errorf("failed to get reservation response %s: %w", uuid, err)
+	}
 	if username != reservationDB.Username {
 		return models.ExtendedReservationResponse{}, fmt.Errorf("wrong username: %w", models.WrongUsernameError)
 	}
@@ -82,7 +84,11 @@ func (r *reservationStorage) GetAllReservationByUsername(ctx context.Context, us
 			FullAddress: fmt.Sprintf("%s, %s, %s", hotelDB.Country, hotelDB.City, hotelDB.Address),
 			Stars:       hotelDB.Stars,
 		}
-		reservationResponse = append(reservationResponse, reservationDB[i].ToResponse(hotelInfo))
+		res, err := reservationDB[i].ToResponse(hotelInfo)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get reservation response %s: %w", reservationDB[i].ReservationUid, err)
+		}
+		reservationResponse = append(reservationResponse, res)
 	}
 
 	return reservationResponse, nil
