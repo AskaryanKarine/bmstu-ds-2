@@ -32,8 +32,8 @@ func NewServer(lr loyaltyRepository) *Server {
 	api.GET("/loyalty", s.getLoyaltyByUser, app.GetUsernameMW())
 
 	reservations := api.Group("/reservations")
-	//reservations.POST("", s.createReservation, settings.GetUsernameMW())
 	reservations.DELETE("/decrease", s.decreaseCounter, app.GetUsernameMW())
+	reservations.POST("/increase", s.increaseCounter, app.GetUsernameMW())
 
 	return s
 }
