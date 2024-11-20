@@ -49,7 +49,7 @@ func NewServer(cfg config.Config) *Server {
 
 	reservations := api.Group("/reservations", app.GetUsernameMW())
 	reservations.GET("", s.getReservations, app.GetUsernameMW())
-	reservations.POST("", func(c echo.Context) error { return nil })
+	reservations.POST("", s.createReservation, app.GetUsernameMW())
 	reservations.GET("/:uid", s.getReservationsByUID, app.GetUsernameMW())
 	reservations.DELETE("/:uid", s.canceledReservation, app.GetUsernameMW())
 

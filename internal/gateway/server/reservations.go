@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/AskaryanKarine/bmstu-ds-2/pkg/models"
+	"github.com/AskaryanKarine/bmstu-ds-2/pkg/validation"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
@@ -108,4 +109,64 @@ func (s *Server) canceledReservation(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusNoContent, echo.Map{})
+}
+
+func (s *Server) createReservation(c echo.Context) error {
+	username, ok := c.Get("username").(string)
+	if !ok {
+		return c.JSON(http.StatusBadRequest, models.ErrorResponse{Message: "failed to get username"})
+	}
+
+	var body models.CreateReservationRequest
+	if err := c.Bind(&body); err != nil {
+		return c.JSON(http.StatusBadRequest, models.ErrorResponse{Message: err.Error()})
+	}
+
+	if err := c.Validate(body); err != nil {
+		return c.JSON(http.StatusBadRequest, validation.ConvertToError(err, "failed to validate body request"))
+	}
+
+	hotelInfo, err := s.reservation.GetHotelByUUID(body.HotelUid) // отсюда только price
+	if err != nil {
+		return processError(c, err)
+	}
+
+	loyalty, err := s.loyalty.GetLoyaltyByUser(username) // отсюда только discount
+	if err != nil {
+		return processError(c, err)
+	}
+
+	// передавать в P инфу о discount, price, start date, end date
+	extendedPaymentInfo, err := s.payment.CreatePayment(models.PaymentCreateRequest{
+		Price:     hotelInfo.Price,
+		Discount:  loyalty.Discount,
+		StartDate: body.StartDate,
+		EndDate:   body.EndDate,
+	})
+
+	if err != nil {
+		return processError(c, err)
+	}
+
+	err = s.loyalty.IncreaseLoyalty(username)
+	if err != nil {
+		return processError(c, err)
+	}
+
+	reservationUid, err := s.reservation.CreateReservation(models.ExtendedCreateReservationResponse{
+		CreateReservationRequest: body,
+		PaymentUid:               extendedPaymentInfo.PaymentUid,
+	}, username)
+
+	if err != nil {
+		return processError(c, err)
+	}
+
+	reservation, err := s.reservation.GetReservationByUUID(username, reservationUid)
+	if err != nil {
+		return processError(c, err)
+	}
+	reservation.Payment = extendedPaymentInfo.PaymentInfo
+
+	return c.JSON(http.StatusCreated, reservation)
 }
