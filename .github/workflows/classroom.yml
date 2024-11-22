@@ -67,6 +67,54 @@ jobs:
     secrets:
       REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
 
+  deploy-gateway:
+    name: Build Gateway Service
+    needs: [ "build-gateway" ]
+    uses: ./.github/workflows/deploy.yml
+    with:
+      service-name: gateway
+    secrets:
+      REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+      REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+      REMOTE_KEY: ${{ secrets.REMOTE_KEY }}
+      REMOTE_USER: ${{ secrets.REMOTE_USER }}
+
+  deploy-loyalty:
+    name: Build Loyalty Service
+    needs: [ "build-loyalty" ]
+    uses: ./.github/workflows/deploy.yml
+    with:
+      service-name: loyalty
+    secrets:
+      REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+      REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+      REMOTE_KEY: ${{ secrets.REMOTE_KEY }}
+      REMOTE_USER: ${{ secrets.REMOTE_USER }}
+
+  deploy-payment:
+    name: Build Payment Service
+    needs: [ "build-payment" ]
+    uses: ./.github/workflows/deploy.yml
+    with:
+      service-name: payment
+    secrets:
+      REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+      REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+      REMOTE_KEY: ${{ secrets.REMOTE_KEY }}
+      REMOTE_USER: ${{ secrets.REMOTE_USER }}
+
+  deploy-reservation:
+    name: Build Gateway Service
+    needs: [ "build-reservation" ]
+    uses: ./.github/workflows/deploy.yml
+    with:
+      service-name: reservation
+    secrets:
+      REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+      REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+      REMOTE_KEY: ${{ secrets.REMOTE_KEY }}
+      REMOTE_USER: ${{ secrets.REMOTE_USER }}
+
 #    name: Autograding
 #    runs-on: ubuntu-latest
 #    steps:
