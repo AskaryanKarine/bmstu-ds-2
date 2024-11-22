@@ -12,6 +12,7 @@ type Server struct {
 	ps   paymentStorage
 }
 
+//go:generate minimock -o mocks_storage.go -g
 type paymentStorage interface {
 	GetPaymentInfoByUUID(ctx context.Context, uuid string) (models.PaymentInfo, error)
 	Delete(ctx context.Context, uuid string) error

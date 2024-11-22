@@ -14,6 +14,7 @@ type Server struct {
 	rs   reservationStorage
 }
 
+//go:generate minimock -o mocks_storage.go -i hotelStorage -g
 type hotelStorage interface {
 	GetAllHotels(ctx context.Context, pagination innermodels.PaginationParams) ([]models.HotelResponse, int, error)
 	GetHotelInfoByUUID(ctx context.Context, uuid string) (models.HotelResponse, error)

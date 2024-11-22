@@ -12,6 +12,7 @@ type Server struct {
 	lr   loyaltyRepository
 }
 
+//go:generate minimock -o mocks_storage.go -g
 type loyaltyRepository interface {
 	GetByUser(ctx context.Context, username string) (models.LoyaltyInfoResponse, error)
 	UpdateByUser(ctx context.Context, username string, usersLoyalty models.LoyaltyInfoResponse) error
