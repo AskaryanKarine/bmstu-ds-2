@@ -73,6 +73,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       service-name: gateway
+      service-port: 8080
     secrets:
       REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
       REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
@@ -85,6 +86,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       service-name: loyalty
+      service-port: 8050
     secrets:
       REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
       REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
@@ -97,6 +99,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       service-name: payment
+      service-port: 8060
     secrets:
       REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
       REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
@@ -109,6 +112,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       service-name: reservation
+      service-port: 8070
     secrets:
       REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
       REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
