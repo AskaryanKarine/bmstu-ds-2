@@ -10,23 +10,23 @@ type Config struct {
 	ReservationService string `env:"RESERVATION_SERVICE"`
 }
 
-func NewConfig() (*Config, error) {
+func NewConfig() (Config, error) {
 	localPath := "./configs/gateway.env"
 	var cfg Config
 
 	err := cleanenv.ReadEnv(&cfg)
 	if err != nil {
-		return nil, err
+		return Config{}, err
 	}
 
 	if cfg.AppEnv != "test" {
-		return nil, nil
+		return Config{}, nil
 	}
 
 	err = cleanenv.ReadConfig(localPath, &cfg)
 	if err != nil {
-		return nil, err
+		return Config{}, err
 	}
 
-	return &cfg, nil
+	return cfg, nil
 }
