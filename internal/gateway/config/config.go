@@ -2,7 +2,6 @@ package config
 
 import (
 	"github.com/ilyakaznacheev/cleanenv"
-	"github.com/labstack/gommon/log"
 )
 
 type Config struct {
@@ -22,18 +21,14 @@ func NewConfig() (Config, error) {
 		return Config{}, err
 	}
 
-	log.Info(cfg)
-
 	if cfg.AppEnv != "test" {
-		return Config{}, nil
+		return cfg, nil
 	}
 
 	err = cleanenv.ReadConfig(localPath, &cfg)
 	if err != nil {
 		return Config{}, err
 	}
-
-	log.Info(cfg)
 
 	return cfg, nil
 }
