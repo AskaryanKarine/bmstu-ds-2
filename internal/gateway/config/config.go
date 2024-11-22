@@ -1,6 +1,9 @@
 package config
 
-import "github.com/ilyakaznacheev/cleanenv"
+import (
+	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/labstack/gommon/log"
+)
 
 type Config struct {
 	AppEnv             string `env:"APP_ENV" env-default:"test"`
@@ -19,6 +22,8 @@ func NewConfig() (Config, error) {
 		return Config{}, err
 	}
 
+	log.Info(cfg)
+
 	if cfg.AppEnv != "test" {
 		return Config{}, nil
 	}
@@ -27,6 +32,8 @@ func NewConfig() (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
+
+	log.Info(cfg)
 
 	return cfg, nil
 }
