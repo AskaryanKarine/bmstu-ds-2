@@ -30,6 +30,43 @@ jobs:
     uses: ./.github/workflows/test.yml
     with:
       service-name: reservation
+
+  build-gateway:
+    name: Build Gateway Service
+    needs: [ "test-gateway" ]
+    uses: ./.github/workflows/build.yml
+    with:
+      service-name: gateway
+    secrets:
+      REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+
+  build-loyalty:
+    name: Build Loyalty Service
+    needs: [ "test-loyalty" ]
+    uses: ./.github/workflows/build.yml
+    with:
+      service-name: loyalty
+    secrets:
+      REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+
+  build-payment:
+    name: Build Payment Service
+    needs: [ "test-payment" ]
+    uses: ./.github/workflows/build.yml
+    with:
+      service-name: payment
+    secrets:
+      REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+
+  build-reservation:
+    name: Build Reservation Service
+    needs: [ "test-reservation" ]
+    uses: ./.github/workflows/build.yml
+    with:
+      service-name: reservation
+    secrets:
+      REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+
 #    name: Autograding
 #    runs-on: ubuntu-latest
 #    steps:
