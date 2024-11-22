@@ -12,6 +12,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	s := server.NewServer(*cfg)
+	s := server.NewServer(cfg)
 	s.Run(cfg.Port)
 }
