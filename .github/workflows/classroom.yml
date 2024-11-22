@@ -68,7 +68,7 @@ jobs:
       REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
 
   deploy-gateway:
-    name: Build Gateway Service
+    name: Deploy Gateway Service
     needs: [ "build-gateway" ]
     uses: ./.github/workflows/deploy.yml
     with:
@@ -81,7 +81,7 @@ jobs:
       REMOTE_USER: ${{ secrets.REMOTE_USER }}
 
   deploy-loyalty:
-    name: Build Loyalty Service
+    name: Deploy Loyalty Service
     needs: [ "build-loyalty" ]
     uses: ./.github/workflows/deploy.yml
     with:
@@ -94,7 +94,7 @@ jobs:
       REMOTE_USER: ${{ secrets.REMOTE_USER }}
 
   deploy-payment:
-    name: Build Payment Service
+    name: Deploy Payment Service
     needs: [ "build-payment" ]
     uses: ./.github/workflows/deploy.yml
     with:
@@ -107,7 +107,7 @@ jobs:
       REMOTE_USER: ${{ secrets.REMOTE_USER }}
 
   deploy-reservation:
-    name: Build Gateway Service
+    name: Deploy Gateway Service
     needs: [ "build-reservation" ]
     uses: ./.github/workflows/deploy.yml
     with:
