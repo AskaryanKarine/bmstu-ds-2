@@ -40,6 +40,7 @@ func NewServer(cfg config.Config) *Server {
 	}
 
 	app.SetStandardSetting(e)
+	app.AddHealthCheck(e)
 
 	api := s.echo.Group("/api/v1")
 
